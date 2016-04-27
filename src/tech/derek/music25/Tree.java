@@ -21,12 +21,17 @@ public class Tree
 
     /**
      * Populate the given nodes children based off of a list of notes.
-     * @param notes - The score to find the children from
-     * @param node - The node to populate the children with
+     * @param notes - The score to find the children from.
+     * @param node - The node to populate the children with.
      */
     private void populateChildren(List<Note> notes, Node node)
     {
-       
+       for(int i = 0; i < notes.size(); i++)
+       {
+           Note note = notes.get(i);
+
+         
+       }
     }
 
     private float relativeFrequency(List<Note> notes, Note note)
