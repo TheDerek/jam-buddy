@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public final class Note
 {
+    public static final String[] NOTE_NAMES = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+
     public final int key;
     public final Note.State state;
 
@@ -17,6 +19,15 @@ public final class Note
     public static Note valueOf(int key, State state)
     {
         return new Note(key, state);
+    }
+
+    @Override
+    public String toString()
+    {
+        int octave = (key / 12)-1;
+        int note = key % 12;
+        String noteName = NOTE_NAMES[note];
+        return "State: " + state.toString() + ", Note: " + noteName + octave + ", Key: " + key;
     }
 
     @Override

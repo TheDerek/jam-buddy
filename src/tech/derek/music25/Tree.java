@@ -5,7 +5,8 @@ import java.util.stream.Collectors;
 
 public class Tree
 {
-    public List<Node> nodes;
+    private static final Random random = new Random();
+    public final List<Node> nodes;
 
     public Tree(List<Note> notes)
     {
@@ -17,21 +18,88 @@ public class Tree
                 .map(n -> new Node(n, relativeFrequency(notes, n)))
                 // Return a list
                 .collect(Collectors.toList());
+
+        // Populate the set of nodes with children
+        nodes.stream().forEach(n -> populateChildren(notes, n));
+    }
+
+    // Walk along the tree and generate a series of notes
+    public List<Note> walk(int length)
+    {
+        List<Note> song = new ArrayList<>(length);
+        Note note = nodes.get(random.nextInt(nodes.size())).note;
+
+        do {
+            song.add(note);
+            length--;
+            note = nextNote(note);
+        } while(length > 0);
+
+        return song;
+    }
+
+    private Note nextNote(Note note)
+    {
+        Optional<Node> node = nodes.stream()
+                .filter(n -> n.note.equals(note))
+                .findFirst();
+
+        if(!node.isPresent())
+            throw new NoSuchElementException("The note you have given is not" +
+                    " present in this tree");
+
+        float probability = random.nextFloat();
+        float cumulative = 0;
+
+        for(Node child : node.get().children)
+        {
+            cumulative += child.relFreq;
+            if(cumulative >= probability)
+                return child.note;
+        }
+
+        throw new NoSuchElementException("This nodes probabilities do not add " +
+                "up to one.");
     }
 
     /**
      * Populate the given nodes children based off of a list of notes.
+     *
      * @param notes - The score to find the children from.
-     * @param node - The node to populate the children with.
+     * @param node  - The node to populate the children with.
      */
     private void populateChildren(List<Note> notes, Node node)
     {
-       for(int i = 0; i < notes.size(); i++)
-       {
-           Note note = notes.get(i);
+        float occurrences = 0;
 
-         
-       }
+        for (int i = 0; i < notes.size() - 1; i++)
+        {
+            Note note = notes.get(i);
+
+            // Add the next note to this note to the nodes children
+            if (note.equals(node.note))
+            {
+                occurrences += 1;
+                Note nextNote = notes.get(i + 1);
+
+                // Check if  nextNote already exists in tree or add a new note
+                // if it does not
+                Optional<Node> possibleNode = node.children.stream()
+                        .filter(n -> n.note.equals(nextNote))
+                        .findFirst();
+
+                if (possibleNode.isPresent())
+                    possibleNode.get().relFreq += 1;
+                else
+                    node.children.add(new Node(nextNote, 1));
+            }
+        }
+
+        // Done populating children, can change their frequencies into
+        // relative frequencies
+        for(Node child : node.children)
+            child.relFreq /= occurrences;
+
     }
 
     private float relativeFrequency(List<Note> notes, Note note)
@@ -42,15 +110,22 @@ public class Tree
 
     public class Node
     {
-        public final Note note;
-        public final float relFreq;
-        public final List<Node> children;
+        final Note note;
+        float relFreq;
+        final List<Node> children;
 
         Node(Note note, float relFreq)
         {
             this.note = note;
             this.relFreq = relFreq;
             children = new ArrayList<>();
+        }
+
+        @Override
+        public String toString()
+        {
+            return note.toString() + ", Probability: " +
+                    String.format("%.02f", relFreq);
         }
     }
 }
