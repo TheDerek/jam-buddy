@@ -14,11 +14,11 @@ import static org.junit.Assert.*;
 
 public class TreeTest
 {
-    private Note a = Note.valueOf(57, 1);
-    private Note b = Note.valueOf(59, 1);
-    private Note c = Note.valueOf(60, 1);
-    private Note d = Note.valueOf(62, 1);
-    private Note e = Note.valueOf(64, 1);
+    private Note a = Note.valueOf(57, 60);
+    private Note b = Note.valueOf(59, 60);
+    private Note c = Note.valueOf(60, 60);
+    private Note d = Note.valueOf(62, 60);
+    private Note e = Note.valueOf(64, 60);
 
     @Before
     public void setUp() throws Exception

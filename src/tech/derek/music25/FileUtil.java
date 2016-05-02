@@ -67,7 +67,7 @@ public class FileUtil
         }
 
         // Return the biggest track (hopefully the one containing notes)
-        return tracks.stream().sorted().findFirst().get();
+        return tracks.stream().sorted((l1, l2) -> Integer.compare(l2.size(), l1.size())).findFirst().get();
     }
 
     public static Sequence toSequence(List<Note> notes) throws InvalidMidiDataException
@@ -87,7 +87,7 @@ public class FileUtil
 
         //****  set tempo (meta event)  ****
         MetaMessage mt = new MetaMessage();
-        byte[] bt = {0x02, (byte) 0x00, 0x00};
+        byte[] bt = {0x01, (byte) 0x00, 0x00};
         mt.setMessage(0x51, bt, 3);
         me = new MidiEvent(mt, (long) 0);
         t.add(me);
@@ -121,19 +121,21 @@ public class FileUtil
         long lastTick = 1L;
         for(Note note : notes)
         {
+
+            long length = note.length / 2L;
             //****  note on - middle C  ****
-            ShortMessage mm = new ShortMessage();
-            mm.setMessage(0x90, note.key, note.velocity);
-            me = new MidiEvent(mm, lastTick);
+            ShortMessage msg = new ShortMessage();
+            msg.setMessage(0x90, note.key, note.velocity);
+            me = new MidiEvent(msg, lastTick);
             t.add(me);
 
             //****  note off - middle C - 120 ticks later  ****
-            mm = new ShortMessage();
-            mm.setMessage(0x80, note.key, 0x40);
-            me = new MidiEvent(mm, lastTick + note.length);
+            msg = new ShortMessage();
+            msg.setMessage(0x80, note.key, 0x40);
+            me = new MidiEvent(msg, lastTick + length);
             t.add(me);
 
-            lastTick += note.length;
+            lastTick += length;
         }
 
         //****  set end of track (meta event) 19 ticks later  ****
@@ -143,6 +145,7 @@ public class FileUtil
         me = new MidiEvent(mt, lastTick + 10L);
         t.add(me);
 
+        s.getTickLength();
         return s;
     }
 

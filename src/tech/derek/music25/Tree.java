@@ -48,6 +48,9 @@ public class Tree
             throw new NoSuchElementException("The note you have given is not" +
                     " present in this tree");
 
+        if(node.get().children.isEmpty())
+            return nodes.get(random.nextInt(nodes.size())).note;
+
         float probability = random.nextFloat();
         float cumulative = 0;
 
