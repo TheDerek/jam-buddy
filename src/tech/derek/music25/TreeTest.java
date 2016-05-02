@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.sound.midi.InvalidMidiDataException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,11 +14,11 @@ import static org.junit.Assert.*;
 
 public class TreeTest
 {
-    private Note a = Note.valueOf(57, Note.State.On);
-    private Note b = Note.valueOf(59, Note.State.On);
-    private Note c = Note.valueOf(60, Note.State.On);
-    private Note d = Note.valueOf(62, Note.State.On);
-    private Note e = Note.valueOf(64, Note.State.On);
+    private Note a = Note.valueOf(57, 1);
+    private Note b = Note.valueOf(59, 1);
+    private Note c = Note.valueOf(60, 1);
+    private Note d = Note.valueOf(62, 1);
+    private Note e = Note.valueOf(64, 1);
 
     @Before
     public void setUp() throws Exception
@@ -25,12 +27,13 @@ public class TreeTest
     }
 
     @Test
-    public void testWalk()
+    public void testWalk() throws InvalidMidiDataException, IOException
     {
         Note[] notes = new Note[] {a, b, e, c, d, e, a, a, d, a, d};
 
         Tree tree = new Tree(Arrays.asList(notes));
         List<Note> generated = tree.walk(40);
+        FileUtil.toFile(generated, "assets/gen.midi");
     }
 
     @Test

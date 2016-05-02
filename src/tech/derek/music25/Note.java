@@ -8,17 +8,21 @@ public final class Note
     public static final String[] NOTE_NAMES = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
     public final int key;
-    public final Note.State state;
+    public final long length;
+    public final int velocity = 70;
+    private final int hash;
 
-    private Note(int key, State state)
+
+    private Note(int key, long length)
     {
         this.key = key;
-        this.state = state;
+        this.length = length;
+        this.hash = Arrays.hashCode(new Object[]{key, length});
     }
 
-    public static Note valueOf(int key, State state)
+    public static Note valueOf(int key, long length)
     {
-        return new Note(key, state);
+        return new Note(key, length);
     }
 
     @Override
@@ -27,7 +31,7 @@ public final class Note
         int octave = (key / 12)-1;
         int note = key % 12;
         String noteName = NOTE_NAMES[note];
-        return "State: " + state.toString() + ", Note: " + noteName + octave + ", Key: " + key;
+        return "Length: " + length + ", Note: " + noteName + octave + ", Key: " + key +  ", Velocity: " + velocity;
     }
 
     @Override
@@ -37,16 +41,9 @@ public final class Note
             return false;
 
         return ((Note) object).key == this.key
-                && ((Note) object).state == this.state;
+                && ((Note) object).length == this.length;
     }
 
     @Override
-    public int hashCode()
-    {
-        return Arrays.hashCode(new Object[]{key, state});
-    }
-
-    public enum State {
-        On, Off
-    }
+    public int hashCode() {return hash; }
 }

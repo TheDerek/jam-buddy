@@ -10,7 +10,7 @@ public class MidiInput
     public static final String[] NOTE_NAMES = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
     public static void main(String[] args) throws Exception {
-        Sequence sequence = MidiSystem.getSequence(new File("bach_bourree.mid"));
+        Sequence sequence = MidiSystem.getSequence(new File("assets/scale.midi"));
 
         int trackNumber = 0;
         for (Track track :  sequence.getTracks()) {
