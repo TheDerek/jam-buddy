@@ -2,6 +2,7 @@ package tech.derek.music25;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Tree
 {
@@ -21,6 +22,7 @@ public class Tree
 
         // Populate the set of nodes with children
         nodes.stream().forEach(n -> populateChildren(notes, n));
+        System.out.println("Total Notes: " + notes.size() + ", Unique Notes: " + nodes.size());
     }
 
     // Walk along the tree and generate a series of notes
@@ -36,6 +38,15 @@ public class Tree
         } while(length > 0);
 
         return song;
+    }
+
+    /**
+     * Combine this tree with another tree
+     * @param other the tree to combine with.
+     */
+    public void merge(Tree other)
+    {
+
     }
 
     private Note nextNote(Note note)

@@ -21,7 +21,18 @@ public class FileUtil
         return toList(sequence);
     }
 
+    public static List<Note> readMIDI(String path, int roundTo) throws InvalidMidiDataException, IOException
+    {
+        Sequence sequence = MidiSystem.getSequence(new File(path));
+        return toList(sequence, roundTo);
+    }
+
     public static List<Note> toList(Sequence sequence)
+    {
+        return toList(sequence, 1);
+    }
+
+    public static List<Note> toList(Sequence sequence, int roundTo)
     {
         List<List<Note>> tracks = new ArrayList<>();
 
@@ -55,6 +66,13 @@ public class FileUtil
                         // can sort the notes later by their timestamp
                         long noteStartingTime = pressedKeys[key];
                         long noteLength = event.getTick() - noteStartingTime;
+
+                        if(roundTo != 1)
+                        {
+                            noteLength = Math.round((float) noteLength / (float) roundTo) * roundTo;
+                            noteLength = Math.max(75, noteLength);
+                        }
+
                         Note note = Note.valueOf(key, noteLength);
                         notes.add(new TimestampNote(note, noteStartingTime));
                     }
@@ -119,10 +137,14 @@ public class FileUtil
         t.add(me);*/
 
         long lastTick = 1L;
+        int i = 0;
         for(Note note : notes)
         {
 
             long length = note.length / 2L;
+            // Cap the notes maximum length;
+            length = Math.min(length, 300);
+
             //****  note on - middle C  ****
             ShortMessage msg = new ShortMessage();
             msg.setMessage(0x90, note.key, note.velocity);
@@ -136,6 +158,7 @@ public class FileUtil
             t.add(me);
 
             lastTick += length;
+            i++;
         }
 
         //****  set end of track (meta event) 19 ticks later  ****
