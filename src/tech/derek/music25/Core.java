@@ -1,8 +1,10 @@
 package tech.derek.music25;
 
 import javax.sound.midi.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +19,7 @@ public class Core
         // Setup our stuff for creating midi files and reading user input
         Scanner reader = new Scanner(System.in);
         TimeZone timeZone = TimeZone.getTimeZone("UTC");
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         dateFormat.setTimeZone(timeZone);
 
         // Remove old files from the user directory
@@ -61,12 +63,28 @@ public class Core
             FileUtil.toFile(gen, filename);
 
             //p = Runtime.getRuntime().exec("fluidsynth -a alsa -m alsa_seq -l -i /usr/share/soundfonts/FluidR3_GM2-2.sf2 " + filename);
-            p = Runtime.getRuntime().exec("timidity " + filename);
-            p.waitFor();
+            BufferedReader out;
+            do
+            {
+                p = Runtime.getRuntime().exec("timidity " + filename);
+                out = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                p.waitFor();
+            } while(!getOutput(out).contains("Notes cut: 0"));
+
         }
+    }
 
+    private static String getOutput(BufferedReader in) throws IOException
+    {
+        String output = "";
+        String line;
 
-
+        while((line = in.readLine()) != null)
+        {
+            output += line + "\n";
+        }
+        in.close();
+        return output;
     }
 
     private static List<Note> getNotesFromFiles(String... files) throws IOException
