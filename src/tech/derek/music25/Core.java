@@ -94,7 +94,7 @@ public class Core
         for(int x = 0; x < files.length; x++)
         {
             String file = files[x];
-            System.out.println("Parsing file " + x + " / " + files.length + ", File: " + file);
+            System.out.println("Parsing file " + (x + 1) + " / " + files.length + ", File: " + file);
             List<Note> fileNotes = null;
             try
             {
